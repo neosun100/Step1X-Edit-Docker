@@ -67,7 +67,7 @@ Then you can download the corresponding pre-built wheel and install it following
 
 
 ### 2.3 Inference Scripts
-After downloading the model weights, you can use the following scripts to edit images:
+After downloading the [model weights](https://huggingface.co/stepfun-ai/Step1X-Edit), you can use the following scripts to edit images:
 
 ```
 bash scripts/run_examples.sh
