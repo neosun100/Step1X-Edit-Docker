@@ -46,7 +46,7 @@ The following table shows the requirements for running Step1X-Edit model (batch 
 ### 2.2 Dependencies and Installation
 
 
-Install [torch](https://pytorch.org/get-started/locally/) >= 2.2 with cuda toolkit and corresponding torchvision. We test our model using torch==2.3.1 and torch==2.5.1 with cuda-12.1.
+python >=3.10.0 and install [torch](https://pytorch.org/get-started/locally/) >= 2.2 with cuda toolkit and corresponding torchvision. We test our model using torch==2.3.1 and torch==2.5.1 with cuda-12.1.
 
 
 Install requirements:
