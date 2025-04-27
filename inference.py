@@ -20,6 +20,9 @@ from modules.autoencoder import AutoEncoder
 from modules.conditioner import Qwen25VL_7b_Embedder as Qwen2VLEmbedder
 from modules.model_edit import Step1XParams, Step1XEdit
 
+def cudagc():
+    torch.cuda.empty_cache()
+    torch.cuda.ipc_collect()
 
 def load_state_dict(model, ckpt_path, device="cuda", strict=False, assign=True):
     if Path(ckpt_path).suffix == ".safetensors":
@@ -85,13 +88,12 @@ def load_models(
         )
         dit = Step1XEdit(step1x_params)
 
-    ae = load_state_dict(ae, ae_path)
+    ae = load_state_dict(ae, ae_path, 'cpu')
     dit = load_state_dict(
-        dit, dit_path
+        dit, dit_path, 'cpu'
     )
 
-    dit = dit.to(device=device, dtype=dtype)
-    ae = ae.to(device=device, dtype=torch.float32)
+    ae = ae.to(dtype=torch.float32)
 
     return ae, dit, qwen2vl_encoder
 
@@ -105,6 +107,8 @@ class ImageGenerator:
         device="cuda",
         max_length=640,
         dtype=torch.bfloat16,
+        quantized=False,
+        offload=False,
     ) -> None:
         self.device = torch.device(device)
         self.ae, self.dit, self.llm_encoder = load_models(
@@ -114,6 +118,14 @@ class ImageGenerator:
             max_length=max_length,
             dtype=dtype,
         )
+        if not quantized:
+            self.dit = self.dit.to(dtype=torch.bfloat16)
+        if not offload:
+            self.dit = self.dit.to(device=self.device)
+            self.ae = self.ae.to(device=self.device)
+        self.quantized = quantized 
+        self.offload = offload
+
 
     def prepare(self, prompt, img, ref_image, ref_image_raw):
         bs, _, h, w = img.shape
@@ -146,8 +158,12 @@ class ImageGenerator:
 
         if isinstance(prompt, str):
             prompt = [prompt]
-
+        if self.offload:
+            self.llm_encoder = self.llm_encoder.to(self.device)
         txt, mask = self.llm_encoder(prompt, ref_image_raw)
+        if self.offload:
+            self.llm_encoder = self.llm_encoder.cpu()
+            cudagc()
 
         txt_ids = torch.zeros(bs, txt.shape[1], 3)
 
@@ -186,6 +202,8 @@ class ImageGenerator:
         show_progress=False,
         timesteps_truncate=1.0,
     ):
+        if self.offload:
+            self.dit = self.dit.to(self.device)
         if show_progress:
             pbar = tqdm(itertools.pairwise(timesteps), desc='denoising...')
         else:
@@ -196,7 +214,6 @@ class ImageGenerator:
             t_vec = torch.full(
                 (img.shape[0],), t_curr, dtype=img.dtype, device=img.device
             )
-
             txt, vec = self.dit.connector(llm_embedding, t_vec, mask)
 
 
@@ -230,6 +247,9 @@ class ImageGenerator:
                 img[ : img.shape[0] // 2, img_input_length:],
                 ], dim=1
             )
+        if self.offload:
+            self.dit = self.dit.cpu()
+            cudagc()
 
         return img[:, :img.shape[1] // 2]
 
@@ -309,7 +329,12 @@ class ImageGenerator:
 
         ref_images_raw = self.load_image(ref_images_raw)
         ref_images_raw = ref_images_raw.to(self.device)
+        if self.offload:
+            self.ae = self.ae.to(self.device)
         ref_images = self.ae.encode(ref_images_raw.to(self.device) * 2 - 1)
+        if self.offload:
+            self.ae = self.ae.cpu()
+            cudagc()
 
         seed = int(seed)
         seed = torch.Generator(device="cpu").seed() if seed < 0 else seed
@@ -320,7 +345,12 @@ class ImageGenerator:
             init_image = self.load_image(init_image)
             init_image = init_image.to(self.device)
             init_image = torch.nn.functional.interpolate(init_image, (height, width))
+            if self.offload:
+                self.ae = self.ae.to(self.device)
             init_image = self.ae.encode(init_image.to() * 2 - 1)
+            if self.offload:
+                self.ae = self.ae.cpu()
+                cudagc()
         
         x = torch.randn(
             num_samples,
@@ -347,16 +377,21 @@ class ImageGenerator:
         ref_images_raw = torch.cat([ref_images_raw, ref_images_raw], dim=0)
         inputs = self.prepare([prompt, negative_prompt], x, ref_image=ref_images, ref_image_raw=ref_images_raw)
 
-        x = self.denoise(
-            **inputs,
-            cfg_guidance=cfg_guidance,
-            timesteps=timesteps,
-            show_progress=show_progress,
-            timesteps_truncate=1.0,
-        )
-        x = self.unpack(x.float(), height, width)
         with torch.autocast(device_type=self.device.type, dtype=torch.bfloat16):
+            x = self.denoise(
+                **inputs,
+                cfg_guidance=cfg_guidance,
+                timesteps=timesteps,
+                show_progress=show_progress,
+                timesteps_truncate=1.0,
+            )
+            x = self.unpack(x.float(), height, width)
+            if self.offload:
+                self.ae = self.ae.to(self.device)
             x = self.ae.decode(x)
+            if self.offload:
+                self.ae = self.ae.cpu()
+                cudagc()
             x = x.clamp(-1, 1)
             x = x.mul(0.5).add(0.5)
 
@@ -379,20 +414,28 @@ def main():
     parser.add_argument('--num_steps', type=int, default=28, help='Number of diffusion steps')
     parser.add_argument('--cfg_guidance', type=float, default=6.0, help='CFG guidance strength')
     parser.add_argument('--size_level', default=512, type=int)
+    parser.add_argument('--offload', action='store_true', help='Use offload for large models')
+    parser.add_argument('--quantized', action='store_true', help='Use fp8 model weights')
     args = parser.parse_args()
 
     assert os.path.exists(args.input_dir), f"Input directory {args.input_dir} does not exist."
     assert os.path.exists(args.json_path), f"JSON file {args.json_path} does not exist."
+
+    args.output_dir = args.output_dir.rstrip('/') + ('-offload' if args.offload else "") + ('-quantized' if args.quantized else "") + f"-{args.size_level}"
     os.makedirs(args.output_dir, exist_ok=True)
 
     image_and_prompts = json.load(open(args.json_path, 'r'))
 
     image_edit = ImageGenerator(
         ae_path=os.path.join(args.model_path, 'vae.safetensors'),
-        dit_path=os.path.join(args.model_path, "step1x-edit-i1258.safetensors"),
-        qwen2vl_model_path='Qwen/Qwen2.5-VL-7B-Instruct',
+        dit_path=os.path.join(args.model_path, "step1x-edit-i1258-FP8.safetensors" if args.quantized else "step1x-edit-i1258-clean.safetensors"),
+        qwen2vl_model_path=os.path.join(args.model_path, 'Qwen2.5-VL-7B-Instruct'),
         max_length=640,
+        quantized=args.quantized,
+        offload=args.offload,
     )
+
+    time_list = []
 
     for image_name, prompt in image_and_prompts.items():
         image_path = os.path.join(args.input_dir, image_name)
@@ -412,10 +455,12 @@ def main():
         )[0]
         
         print(f"Time taken: {time.time() - start_time:.2f} seconds")
+        time_list.append(time.time() - start_time)
 
         image.save(
             os.path.join(output_path), lossless=True
         )
+    print(f'average time for {args.output_dir}: ', sum(time_list[1:]) / len(time_list[1:]))
 
 
 if __name__ == "__main__":
