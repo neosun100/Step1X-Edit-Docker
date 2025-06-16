@@ -44,7 +44,7 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 - [x] Online demo (Gradio)
 - [x] Fine-tuning scripts
 - [ ] Diffusers 
-- [ ] Multi-gpus Sequence Parallel inference
+- [x] Multi-gpus Sequence Parallel inference
 - [x] FP8 Quantified weight
 - [x] ComfyUI
 
@@ -69,8 +69,22 @@ The following table shows the requirements for running Step1X-Edit model (batch 
 | Step1X-Edit + offload   |       25.9GB / 27.3GB / 29.1GB | 49.6s / 54.1s / 63.2s |
 | Step1X-Edit-FP8 + offload   |   18GB / 18GB / 18GB | 35s / 40s / 51s |
 
-* The model is tested on one H800 GPUs.
+* The model is tested on one H800 GPU.
 * We recommend to use GPUs with 80GB of memory for better generation quality and efficiency.
+
+The table below presents the speedup of several efficient methods on the Step1X-Edit model.
+
+|     Model    |     Peak GPU Memory   |  28 steps |
+|:------------:|:------------:|:------------:|
+| Step1X-Edit + TeaCache     |    49.6GB   | 16.78s | 
+| Step1X-Edit + xDiT (GPU=2) |    50.2GB   | 12.81s |
+| Step1X-Edit + xDiT (GPU=4) |    52.9GB   | 8.17s |
+| Step1X-Edit + TeaCache + xDiT (GPU=2)  |  50.7GB    | 8.94s |
+| Step1X-Edit + TeaCache + xDiT (GPU=4)  |  54.2GB |  5.82s |
+
+* The model was tested on H800 series GPUs with a resolution of 1024.
+* TeaCache's default threshold of 0.2 provides a good balance between efficiency and performance.
+* xDiT employs both CFG Parallelism and Ring Attention when using 4 GPUs, but only utilizes CFG Parallelism when operating with 2 GPUs.
 
 
 ### 2.2 Dependencies and Installation
@@ -107,6 +121,18 @@ The default script runs the inference code with non-quantified weights. If you w
 This default script runs the inference code on example inputs. The results will look like:
 <div align="center">
 <img width="1080" alt="results" src="assets/results_show.png">
+</div>
+
+
+For multi-GPU inference, you can use the following script:
+```
+bash scripts/run_examples_parallel.sh
+```
+You can change the number of GPUs (`GPU`), the configuration of xDiT (`--ulysses_degree` or `--ring_degree` or `--cfg_degree`), and whether to enable TeaCache acceleration (`--teacache`) in the script.
+
+This default script runs the inference code on example inputs. The results will look like:
+<div align="center">
+<img width="1080" alt="results" src="assets/efficient_teasar.png">
 </div>
 
 ### 2.4 Gradio Scripts
@@ -196,7 +222,7 @@ The evaluation process and related code can be found in [GEdit-Bench/EVAL.md](GE
 ```
 
 ## 6. Acknowledgement
-We would like to express our sincere thanks to the contributors of [Kohya](https://github.com/kohya-ss/sd-scripts/tree/sd3), [SD3](https://huggingface.co/stabilityai/stable-diffusion-3-medium), [FLUX](https://github.com/black-forest-labs/flux), [Qwen](https://github.com/QwenLM/Qwen2.5), [diffusers](https://github.com/huggingface/diffusers) and [HuggingFace](https://huggingface.co) teams, for their open research and exploration.
+We would like to express our sincere thanks to the contributors of [Kohya](https://github.com/kohya-ss/sd-scripts/tree/sd3), [SD3](https://huggingface.co/stabilityai/stable-diffusion-3-medium), [FLUX](https://github.com/black-forest-labs/flux), [Qwen](https://github.com/QwenLM/Qwen2.5), [xDiT](https://github.com/xdit-project/xDiT), [TeaCache](https://github.com/ali-vilab/TeaCache), [diffusers](https://github.com/huggingface/diffusers) and [HuggingFace](https://huggingface.co) teams, for their open research and exploration.
 
 
 ## 7. Disclaimer
