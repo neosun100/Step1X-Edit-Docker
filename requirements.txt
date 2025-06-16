@@ -28,3 +28,6 @@ huggingface-hub==0.30.2
 imagesize==1.4.1
 rich==13.9.4
 sentencepiece==0.2.0
+
+# for parallel
+xfuser==0.4.3
