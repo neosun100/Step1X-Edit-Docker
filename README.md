@@ -15,6 +15,7 @@
 
 
 ## 🔥🔥🔥 News!!
+* Jun 17, 2025: 👋 Support for Teacache and parallel inference has been added.
 * May 22, 2025: 👋 Step1X-Edit now supports Lora finetuning on a single 24GB GPU now! A hand-fixing Lora for anime characters has also been released. [Download Lora](https://huggingface.co/stepfun-ai/Step1X-Edit)
 * Apr 30, 2025: 🎉 Step1X-Edit ComfyUI Plugin is available now, thanks for the community contribution! [quank123wip/ComfyUI-Step1X-Edit](https://github.com/quank123wip/ComfyUI-Step1X-Edit) & [raykindle/ComfyUI_Step1X-Edit](https://github.com/raykindle/ComfyUI_Step1X-Edit).
 * Apr 27, 2025: 🎉 With community support, we update the inference code and model weights of Step1X-Edit-FP8. [meimeilook/Step1X-Edit-FP8](https://huggingface.co/meimeilook/Step1X-Edit-FP8) & [rkfg/Step1X-Edit-FP8](https://huggingface.co/rkfg/Step1X-Edit-FP8).
@@ -43,7 +44,6 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 - [x] Inference & Checkpoints
 - [x] Online demo (Gradio)
 - [x] Fine-tuning scripts
-- [ ] Diffusers 
 - [x] Multi-gpus Sequence Parallel inference
 - [x] FP8 Quantified weight
 - [x] ComfyUI
@@ -51,7 +51,7 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 
 
 ## 1. Introduction
-we introduce a state-of-the-art image editing model, **Step1X-Edit**, which aims to provide comparable performance against the closed-source models like GPT-4o and Gemini2 Flash. 
+We introduce a state-of-the-art image editing model, **Step1X-Edit**, which aims to provide comparable performance against the closed-source models like GPT-4o and Gemini2 Flash. 
 More specifically, we adopt the Multimodal LLM to process the reference image and user's editing instruction. A latent embedding has been extracted and integrated with a diffusion image decoder to obtain  the target image. To train the model, we build a data generation pipeline to produce a high-quality dataset. 
 For evaluation, we develop the GEdit-Bench, a novel benchmark rooted in real-world user instructions. Experimental results on GEdit-Bench demonstrate that Step1X-Edit outperforms existing open-source baselines by a substantial margin and approaches the performance of leading proprietary models, thereby making significant contributions to the field of image editing. 
 More details please refer to our [technical report](https://arxiv.org/abs/2504.17761).
@@ -60,7 +60,7 @@ More details please refer to our [technical report](https://arxiv.org/abs/2504.1
 ## 2. Model Usage
 ### 2.1  Requirements
 
-The following table shows the requirements for running Step1X-Edit model (batch size = 1, w/o cfg distillation) to edit images:
+The following table shows the requirements for running Step1X-Edit model (batch size = 1, with cfg) to edit images:
 
 |     Model    |     Peak GPU Memory (512 / 786 / 1024)  | 28 steps w flash-attn(512 / 786 / 1024) |
 |:------------:|:------------:|:------------:|
@@ -116,7 +116,7 @@ After downloading the [model weights](https://huggingface.co/stepfun-ai/Step1X-E
 ```
 bash scripts/run_examples.sh
 ```
-The default script runs the inference code with non-quantified weights. If you want to save the GPU memory usage, you can 1) download the FP8 weights and set the `--quantized` flag in the script, or 2) set the `--offload` flag in the script to offload some modules to CPU.
+The default script runs the inference code with non-quantified weights. If you want to save the GPU memory usage, you can 1)  set the `--quantized` flag in the script, which will quantify the weights to fp8, or 2) set the `--offload` flag in the script to offload some modules to CPU.
 
 This default script runs the inference code on example inputs. The results will look like:
 <div align="center">
