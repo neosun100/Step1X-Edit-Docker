@@ -47,6 +47,12 @@ Our evaluation process consists of the following steps:
      ```
    - This will output scores broken down by edit category and provide aggregate metrics
 
+# Notice
+We observed that the evaluation scores from GPT-4o exhibit a degree of volatility. Even for the same input image at the same time point, the scores may fluctuate, with a typical variation of around 0.1.
+
+To facilitate reproducibility, we have released the [intermediate results](https://huggingface.co/datasets/Shiyu95/gedit_results) of our model evaluations. Evaluating these results using the Qwen model should allow for full reproduction of the values reported in our paper.
+
+
 # Acknowledgements
 
 This project builds upon and adapts code from the following excellent repositories:
