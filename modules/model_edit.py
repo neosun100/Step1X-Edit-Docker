@@ -27,6 +27,7 @@ class Step1XParams:
     theta: int
     qkv_bias: bool
     mode: str
+    version: str
 
 
 class Step1XEdit(nn.Module):
@@ -83,7 +84,7 @@ class Step1XEdit(nn.Module):
 
         self.final_layer = LastLayer(self.hidden_size, 1, self.out_channels)
 
-        self.connector = Qwen2Connector()
+        self.connector = Qwen2Connector(version=params.version)
 
         # adapted from kohya definition
         self.gradient_checkpointing = False
@@ -206,6 +207,7 @@ class Step1XEdit(nn.Module):
         llm_embedding: Tensor,
         t_vec: Tensor,
         mask: Tensor,
+        idx = None,
     ) -> Tensor:
         txt, y = self.connector(
             llm_embedding, t_vec, mask

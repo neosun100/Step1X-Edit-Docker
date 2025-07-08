@@ -463,6 +463,7 @@ class Qwen2Connector(torch.nn.Module):
         need_CA=False,
         device=None,
         dtype=torch.bfloat16,
+        version='v1.0'
     ):
         super().__init__()
         factory_kwargs = {"device": device, "dtype":dtype}
@@ -470,16 +471,22 @@ class Qwen2Connector(torch.nn.Module):
         self.S =SingleTokenRefiner(in_channels=in_channels,hidden_size=hidden_size,heads_num=heads_num,depth=depth,need_CA=need_CA,**factory_kwargs)
         self.global_proj_out=nn.Linear(in_channels,768)
 
-        self.scale_factor = nn.Parameter(torch.zeros(1))
-        with torch.no_grad():
-            self.scale_factor.data += -(1 - 0.09)
+        self.version = version
+        if self.version == 'v1.0':
+            self.scale_factor = nn.Parameter(torch.zeros(1))
+            with torch.no_grad():
+                self.scale_factor.data += -(1 - 0.09)
 
     def forward(self, x,t,mask):
         t = t * 1000 # fix the times embedding bug
         mask_float = mask.unsqueeze(-1)  # [b, s1, 1]
+
         x_mean = (x * mask_float).sum(
                 dim=1
-            ) / mask_float.sum(dim=1) * (1 + self.scale_factor.to(x.dtype))
+            ) / mask_float.sum(dim=1)
+
+        if self.version == 'v1.0':
+            x_mean = x_mean * (1 + self.scale_factor.to(x.dtype))
 
         global_out=self.global_proj_out(x_mean)
         encoder_hidden_states = self.S(x,t,mask)
