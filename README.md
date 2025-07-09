@@ -15,6 +15,9 @@
 
 
 ## 🔥🔥🔥 News!!
+* Jul 09, 2025: 👋 We’ve updated the step1x-edit model and released it as [step1x-edit-v1p1](https://huggingface.co/stepfun-ai/Step1X-Edit), featuring:
+  - Improved image editing quality and better instruction-following performance. Details can be found in [GEdit-Bench/EVAL.md](GEdit-Bench/EVAL.md).
+  - Added support for text-to-image (T2I) generation tasks
 * Jun 17, 2025: 👋 Support for Teacache and parallel inference has been added.
 * May 22, 2025: 👋 Step1X-Edit now supports Lora finetuning on a single 24GB GPU now! A hand-fixing Lora for anime characters has also been released. [Download Lora](https://huggingface.co/stepfun-ai/Step1X-Edit)
 * Apr 30, 2025: 🎉 Step1X-Edit ComfyUI Plugin is available now, thanks for the community contribution! [quank123wip/ComfyUI-Step1X-Edit](https://github.com/quank123wip/ComfyUI-Step1X-Edit) & [raykindle/ComfyUI_Step1X-Edit](https://github.com/raykindle/ComfyUI_Step1X-Edit).
@@ -211,6 +214,12 @@ The evaluation process and related code can be found in [GEdit-Bench/EVAL.md](GE
 <img width="1080" alt="results" src="assets/eval_res_en.png">
 </div>
 
+Quantitative evaluation on GEdit-Bench-EN (Full set). G_SC, G_PQ, and G_O refer to the metrics evaluated by GPT-4.1, while Q_SC, Q_PQ, and Q_O refer to the metrics evaluated by Qwen2.5-VL-72B. All metrics are reported as higher-is-better.
+
+|     Models    |     G_SC ⬆️   |  G_PQ ⬆️ | G_O ⬆️   |  Q_SC ⬆️ | Q_PQ ⬆️   |  Q_O ⬆️ |
+|:------------:|:------------:|:------------:| :------------:|:------------:| :------------:|:------------:|
+| Step1X-Edit (v1.0)  |    7.13   | 7.00 |   6.44   | 7.39 |    7.39   | 7.07 | 
+| Step1X-Edit (v1.1)  |    7.66   | 7.35 |   6.97   | 7.65 |    7.41   | 7.35 | 
 
 ## 5. Citation
 ```

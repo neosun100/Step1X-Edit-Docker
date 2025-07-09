@@ -48,9 +48,14 @@ Our evaluation process consists of the following steps:
    - This will output scores broken down by edit category and provide aggregate metrics
 
 # Notice
-We observed that the evaluation scores from GPT-4o exhibit a degree of volatility. Even for the same input image at the same time point, the scores may fluctuate, with a typical variation of around 0.1.
+We observed that the evaluation scores from GPT-4o exhibit a degree of volatility. Even for the same input image at the same time point, the scores may fluctuate, with a typical variation of around 0.1. To facilitate reproducibility, we have released the [intermediate results](https://huggingface.co/datasets/Shiyu95/gedit_results) of our model evaluations. Evaluating these results using the Qwen model should allow for full reproduction of the values reported in our paper.
 
-To facilitate reproducibility, we have released the [intermediate results](https://huggingface.co/datasets/Shiyu95/gedit_results) of our model evaluations. Evaluating these results using the Qwen model should allow for full reproduction of the values reported in our paper.
+As a reference, we report the scores for the quantitative evaluation on GEdit-Bench-EN (Full set). G_SC, G_PQ, and G_O refer to the metrics evaluated by GPT-4.1, while Q_SC, Q_PQ, and Q_O refer to the metrics evaluated by Qwen2.5-VL-72B. All metrics are reported as higher-is-better.
+
+|     Models    |     G_SC ⬆️   |  G_PQ ⬆️ | G_O ⬆️   |  Q_SC ⬆️ | Q_PQ ⬆️   |  Q_O ⬆️ |
+|:------------:|:------------:|:------------:| :------------:|:------------:| :------------:|:------------:|
+| Step1X-Edit (v1.0)  |    7.13   | 7.00 |   6.44   | 7.39 |    7.39   | 7.07 | 
+| Step1X-Edit (v1.1)  |    7.66   | 7.35 |   6.97   | 7.65 |    7.41   | 7.35 | 
 
 
 # Acknowledgements
