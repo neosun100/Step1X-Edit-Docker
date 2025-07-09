@@ -54,7 +54,7 @@ As a reference, we report the scores for the quantitative evaluation on GEdit-Be
 
 |     Models    |     G_SC ⬆️   |  G_PQ ⬆️ | G_O ⬆️   |  Q_SC ⬆️ | Q_PQ ⬆️   |  Q_O ⬆️ |
 |:------------:|:------------:|:------------:| :------------:|:------------:| :------------:|:------------:|
-| Step1X-Edit (v1.0)  |    7.13   | 7.00 |   6.44   | 7.39 |    7.39   | 7.07 | 
+| Step1X-Edit (v1.0)  |    7.13   | 7.00 |   6.44   | 7.39 |    7.28   | 7.07 | 
 | Step1X-Edit (v1.1)  |    7.66   | 7.35 |   6.97   | 7.65 |    7.41   | 7.35 | 
 
 
