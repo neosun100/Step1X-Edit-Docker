@@ -32,3 +32,7 @@ sentencepiece==0.2.0
 
 # for parallel
 xfuser==0.4.3.post3
+
+# for diffusers
+peft==0.17.0
+transformers==4.55.0

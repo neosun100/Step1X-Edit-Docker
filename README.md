@@ -56,6 +56,7 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 - [x] Multi-gpus Sequence Parallel inference
 - [x] FP8 Quantified weight
 - [x] ComfyUI
+- [x] Diffusers
 
 
 
@@ -153,6 +154,41 @@ python gradio_app.py
 ```
 
 Then the gradio demo will run on `localhost:32800`.
+
+
+### 2.5 Diffusers Pipeline
+Install the `diffusers` package from the following command:
+```bash
+git clone -b step1xedit https://github.com/Peyton-Chen/diffusers.git
+cd diffusers
+pip install -e .
+```
+
+Here is an example for using the `Step1XEditPipeline` class to edit images:
+```python
+import torch
+from diffusers import Step1XEditPipeline
+from diffusers.utils import load_image
+
+
+pipe = Step1XEditPipeline.from_pretrained("stepfun-ai/Step1X-Edit-v1p1-diffusers", torch_dtype=torch.bfloat16)
+pipe.to("cuda")
+
+print("=== processing image ===")
+image = load_image("examples/0000.jpg").convert("RGB")
+prompt = "给这个女生的脖子上戴一个带有红宝石的吊坠。"
+image = pipe(
+    image=image,
+    prompt=prompt,
+    num_inference_steps=28,
+    size_level=1024,
+    guidance_scale=6.0,
+    generator=torch.Generator().manual_seed(42),
+).images[0]
+image.save("0000.jpg")
+
+```
+
 
 ## 3. Finetuning
 
