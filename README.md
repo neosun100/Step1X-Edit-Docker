@@ -15,6 +15,19 @@
 
 
 ## 🔥🔥🔥 News!!
+* Sep 08, 2025: 👋 We release [step1x-edit-v1p2-preview](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2-preview), a new version of Step1X-Edit with reasoning edit ability and better performance (report to be released soon), featuring:
+  - Native Reasoning Edit Model: Combines instruction reasoning with reflective correction to handle complex edits more accurately. Performance on KRIS-Bench:
+    |    Models    |   Factual Knowledge ⬆️   |  Conceptual Knowledge ⬆️ | Procedural Knowledge ⬆️   |  Overall ⬆️ | 
+    |:------------:|:------------:|:------------:| :------------:|:------------:| 
+    | Step1X-Edit v1.1  | 53.05 |  54.34 | 44.66 | 51.59 |   
+    | Step1X-Edit v1.2 (no-thinking)  | 60.49 | 58.81 | 41.77 | 52.51 | 
+    | Step1X-Edit v1.2 (thinking)  | 62.24 | 62.25 | 44.43 | 55.21| 
+  - Improved image editing quality and better instruction-following performance. Performance on GEdit-Bench:
+    |     Models    |     G_SC ⬆️   |  G_PQ ⬆️ | G_O ⬆️   |  Q_SC ⬆️ | Q_PQ ⬆️   |  Q_O ⬆️ |
+    |:------------:|:------------:|:------------:| :------------:|:------------:| :------------:|:------------:|
+    | Step1X-Edit (v1.0)  |    7.13   | 7.00 |   6.44   | 7.39 |    7.28   | 7.07 | 
+    | Step1X-Edit (v1.1)  |    7.66   | 7.35 |   6.97   | 7.65 |    7.41   | 7.35 | 
+    | Step1X-Edit (v1.2-preview)  |    8.14   | 7.55 |   7.42   | 7.90 |   7.34   | 7.40   |
 * Jul 09, 2025: 👋 We’ve updated the step1x-edit model and released it as [step1x-edit-v1p1](https://huggingface.co/stepfun-ai/Step1X-Edit) (diffusers version see [here](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p1-diffusers)), featuring:
   - Added support for text-to-image (T2I) generation tasks
   - Improved image editing quality and better instruction-following performance.
