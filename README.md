@@ -155,7 +155,7 @@ The results will look like:
 
 
 ## 🌟 Advanced Usage
-We take original [Step1X-Edit](https://huggingface.co/stepfun-ai/Step1X-Edit) model as an example to demonstrate some advanced usages of the model, other versions of the model may have different interfaces.
+We use the original [Step1X-Edit](https://huggingface.co/stepfun-ai/Step1X-Edit) model as an example to demonstrate some advanced uses of the model. Other versions of the model may have different inference processes.
 
 ### A1. Requirements
 We test our model using torch==2.3.1 and torch==2.5.1 with cuda-12.1.
