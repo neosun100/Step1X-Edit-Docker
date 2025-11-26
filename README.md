@@ -48,162 +48,36 @@
 
 <!-- ## Image Edit Demos -->
 
-<div align="center">
-<img width="720" alt="demo" src="assets/image_edit_demo.gif">
-<p><b>Step1X-Edit:</b> a unified image editing model performs impressively on various genuine user instructions. </p>
-</div>
 
-
-## 🧩 Community Contributions
-
-If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
-
-- A detailed introduction blog of Step1X-Edit: [Step1X-Edit执行流程](https://liwenju0.com/posts/Step1X-Edit%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B-%E4%B8%80.html) by [liwenju0](https://liwenju0.com/about.html)
-- FP8 model weights: [meimeilook/Step1X-Edit-FP8](https://huggingface.co/meimeilook/Step1X-Edit-FP8) by [meimeilook](https://huggingface.co/meimeilook);  [rkfg/Step1X-Edit-FP8](https://huggingface.co/rkfg/Step1X-Edit-FP8) by [rkfg](https://huggingface.co/rkfg)
-- Step1X-Edit ComfyUI Plugin: [quank123wip/ComfyUI-Step1X-Edit](https://github.com/quank123wip/ComfyUI-Step1X-Edit) by [quank123wip](https://github.com/quank123wip); [raykindle/ComfyUI_Step1X-Edit](https://github.com/raykindle/ComfyUI_Step1X-Edit) by [raykindle](https://github.com/raykindle)
-- Training scripts: [hobart07/Step1X-Edit_train](https://github.com/hobart07/Step1X-Edit_train) by [hobart07](https://github.com/hobart07)
-
-## 📑 Open-source Plan
+<!-- ## 📑 Open-source Plan
 - [x] Inference & Checkpoints
 - [x] Online demo (Gradio)
 - [x] Fine-tuning scripts
 - [x] Multi-gpus Sequence Parallel inference
 - [x] FP8 Quantified weight
 - [x] ComfyUI
-- [x] Diffusers
+- [x] Diffusers -->
 
 
 
-## 1. Introduction
+## 📖 Introduction
 We introduce a state-of-the-art image editing model, **Step1X-Edit**, which aims to provide comparable performance against the closed-source models like GPT-4o and Gemini2 Flash. 
 More specifically, we adopt the Multimodal LLM to process the reference image and user's editing instruction. A latent embedding has been extracted and integrated with a diffusion image decoder to obtain  the target image. To train the model, we build a data generation pipeline to produce a high-quality dataset. 
 For evaluation, we develop the GEdit-Bench, a novel benchmark rooted in real-world user instructions. Experimental results on GEdit-Bench demonstrate that Step1X-Edit outperforms existing open-source baselines by a substantial margin and approaches the performance of leading proprietary models, thereby making significant contributions to the field of image editing. 
 More details please refer to our [technical report](https://arxiv.org/abs/2504.17761).
 
-
-## 2. Model Usage
-### 2.1  Requirements
-
-The following table shows the requirements for running Step1X-Edit model (batch size = 1, with cfg) to edit images:
-
-|     Model    |     Peak GPU Memory (512 / 786 / 1024)  | 28 steps w flash-attn(512 / 786 / 1024) |
-|:------------:|:------------:|:------------:|
-| Step1X-Edit   |                42.5GB / 46.5GB / 49.8GB  | 5s / 11s / 22s |
-| Step1X-Edit-FP8   |             31GB / 31.5GB / 34GB     | 6.8s / 13.5s / 25s | 
-| Step1X-Edit + offload   |       25.9GB / 27.3GB / 29.1GB | 49.6s / 54.1s / 63.2s |
-| Step1X-Edit-FP8 + offload   |   18GB / 18GB / 18GB | 35s / 40s / 51s |
-
-* The model is tested on one H800 GPU.
-* We recommend to use GPUs with 80GB of memory for better generation quality and efficiency.
-
-The table below presents the speedup of several efficient methods on the Step1X-Edit model.
-
-|     Model    |     Peak GPU Memory   |  28 steps |
-|:------------:|:------------:|:------------:|
-| Step1X-Edit + TeaCache     |    49.6GB   | 16.78s | 
-| Step1X-Edit + xDiT (GPU=2) |    50.2GB   | 12.81s |
-| Step1X-Edit + xDiT (GPU=4) |    52.9GB   | 8.17s |
-| Step1X-Edit + TeaCache + xDiT (GPU=2)  |  50.7GB    | 8.94s |
-| Step1X-Edit + TeaCache + xDiT (GPU=4)  |  54.2GB |  5.82s |
-
-* The model was tested on H800 series GPUs with a resolution of 1024.
-* TeaCache's default threshold of 0.2 provides a good balance between efficiency and performance.
-* xDiT employs both CFG Parallelism and Ring Attention when using 4 GPUs, but only utilizes CFG Parallelism when operating with 2 GPUs.
-
-
-### 2.2 Dependencies and Installation
-
-
-python >=3.10.0 and install [torch](https://pytorch.org/get-started/locally/) >= 2.2 with cuda toolkit and corresponding torchvision. We test our model using torch==2.3.1 and torch==2.5.1 with cuda-12.1.
-
-
-Install requirements:
-  
-``` bash
-pip install -r requirements.txt
-```
-
-Install [`flash-attn`](https://github.com/Dao-AILab/flash-attention), here we provide a script to help find the pre-built wheel suitable for your system. 
-    
-```bash
-python scripts/get_flash_attn.py
-```
-
-The script will generate a wheel name like `flash_attn-2.7.2.post1+cu12torch2.5cxx11abiFALSE-cp310-cp310-linux_x86_64.whl`, which could be found in [the release page of flash-attn](https://github.com/Dao-AILab/flash-attention/releases).
-
-Then you can download the corresponding pre-built wheel and install it following the instructions in [`flash-attn`](https://github.com/Dao-AILab/flash-attention).
-
-
-### 2.3 Inference Scripts
-After downloading the [model weights](https://huggingface.co/stepfun-ai/Step1X-Edit), you can use the following scripts to edit images:
-
-```
-bash scripts/run_examples.sh
-```
-The default script runs the inference code with non-quantified weights. If you want to save the GPU memory usage, you can 1)  set the `--quantized` flag in the script, which will quantify the weights to fp8, or 2) set the `--offload` flag in the script to offload some modules to CPU.
-
-This default script runs the inference code on example inputs. The results will look like:
 <div align="center">
-<img width="1080" alt="results" src="assets/results_show.png">
+<img width="720" alt="demo" src="assets/image_edit_demo.gif">
+<p><b>Step1X-Edit:</b> a unified image editing model performs impressively on various genuine user instructions. </p>
 </div>
 
 
-For multi-GPU inference, you can use the following script:
-```
-bash scripts/run_examples_parallel.sh
-```
-You can change the number of GPUs (`GPU`), the configuration of xDiT (`--ulysses_degree` or `--ring_degree` or `--cfg_degree`), and whether to enable TeaCache acceleration (`--teacache`) in the script.
-
-This default script runs the inference code on example inputs. The results will look like:
-<div align="center">
-<img width="1080" alt="results" src="assets/efficient_teasar.png">
-</div>
-
-### 2.4 Gradio Scripts
-
-Change the `model_path` in `gradio_app.py` to the local path of Step1X-Edit. Then run
-
-```bash
-python gradio_app.py
-```
-
-Then the gradio demo will run on `localhost:32800`.
+## ⚡️ Quick Start
+1. Make sure your `transformers==4.55.0` (we tested on this version)
+2. Install the `diffusers` package locally, according model version you want to use
 
 
-### 2.5 Diffusers Pipeline
-### 2.5.1 Step1XEditPipeline
-Install the `diffusers` package from the following command:
-```bash
-git clone -b step1xedit https://github.com/Peyton-Chen/diffusers.git
-cd diffusers
-pip install -e .
-```
-
-Here is an example for using the `Step1XEditPipeline` class to edit images:
-```python
-import torch
-from diffusers import Step1XEditPipeline
-from diffusers.utils import load_image
-
-
-pipe = Step1XEditPipeline.from_pretrained("stepfun-ai/Step1X-Edit-v1p1-diffusers", torch_dtype=torch.bfloat16)
-pipe.to("cuda")
-
-print("=== processing image ===")
-image = load_image("examples/0000.jpg").convert("RGB")
-prompt = "给这个女生的脖子上戴一个带有红宝石的吊坠。"
-image = pipe(
-    image=image,
-    prompt=prompt,
-    num_inference_steps=28,
-    size_level=1024,
-    guidance_scale=6.0,
-    generator=torch.Generator().manual_seed(42),
-).images[0]
-image.save("0000.jpg")
-```
-
-### 2.5.2 Step1XEditPipelineV1P2
+### Step1X-Edit-v1p2-preview (v1.2-preview)
 Install the `diffusers` package from the following command:
 ```bash
 git clone -b dev/MergeV1-2 https://github.com/Peyton-Chen/diffusers.git
@@ -211,7 +85,7 @@ cd diffusers
 pip install -e .
 ```
 
-Here is an example for using the `Step1XEditPipelineV1P2` class to edit images:
+Here is an example for using the `Step1X-Edit-v1p2-preview` model to edit images:
 
 ```python
 import torch
@@ -242,9 +116,136 @@ for image_idx in range(len(pipe_output.images)):
 ```
 
 
-## 3. Finetuning
+### Step1X-Edit-v1p1 (v1.1)
+Install the `diffusers` package from the following command:
+```bash
+git clone -b step1xedit https://github.com/Peyton-Chen/diffusers.git
+cd diffusers
+pip install -e .
+```
 
-### 3.1 Training scripts
+Here is an example for using the `Step1X-Edit-v1p1` model to edit images:
+```python
+import torch
+from diffusers import Step1XEditPipeline
+from diffusers.utils import load_image
+
+
+pipe = Step1XEditPipeline.from_pretrained("stepfun-ai/Step1X-Edit-v1p1-diffusers", torch_dtype=torch.bfloat16)
+pipe.to("cuda")
+
+print("=== processing image ===")
+image = load_image("examples/0000.jpg").convert("RGB")
+prompt = "给这个女生的脖子上戴一个带有红宝石的吊坠。"
+image = pipe(
+    image=image,
+    prompt=prompt,
+    num_inference_steps=28,
+    size_level=1024,
+    guidance_scale=6.0,
+    generator=torch.Generator().manual_seed(42),
+).images[0]
+image.save("0000.jpg")
+```
+
+The results will look like:
+<div align="center">
+<img width="1080" alt="results" src="assets/results_show.png">
+</div>
+
+
+## 🌟 Advanced Usage
+We take original [Step1X-Edit](https://huggingface.co/stepfun-ai/Step1X-Edit) model as an example to demonstrate some advanced usages of the model, other versions of the model may have different interfaces.
+
+### A1. Requirements
+We test our model using torch==2.3.1 and torch==2.5.1 with cuda-12.1.
+Install requirements:
+  
+``` bash
+pip install -r requirements.txt
+```
+
+Install [`flash-attn`](https://github.com/Dao-AILab/flash-attention), here we provide a script to help find the pre-built wheel suitable for your system. 
+    
+```bash
+python scripts/get_flash_attn.py
+```
+
+The script will generate a wheel name like `flash_attn-2.7.2.post1+cu12torch2.5cxx11abiFALSE-cp310-cp310-linux_x86_64.whl`, which could be found in [the release page of flash-attn](https://github.com/Dao-AILab/flash-attention/releases).
+
+Then you can download the corresponding pre-built wheel and install it following the instructions in [`flash-attn`](https://github.com/Dao-AILab/flash-attention).
+
+
+
+### A2. Reduce GPU Memory Usage
+You can use the following scripts to edit images with reduced GPU memory usage.
+
+```
+bash scripts/run_examples.sh
+```
+The default script runs the inference code with non-quantified weights. If you want to save the GPU memory usage, you can 1)  set the `--quantized` flag in the script, which will quantify the weights to fp8, or 2) set the `--offload` flag in the script to offload some modules to CPU.
+
+The following table shows the GPU Memory Usage and speed for running Step1X-Edit model (batch size = 1, with cfg) with different configurations:
+
+|     Model    |     Peak GPU Memory (512 / 786 / 1024)  | 28 steps w flash-attn(512 / 786 / 1024) |
+|:------------:|:------------:|:------------:|
+| Step1X-Edit   |                42.5GB / 46.5GB / 49.8GB  | 5s / 11s / 22s |
+| Step1X-Edit (FP8)   |             31GB / 31.5GB / 34GB     | 6.8s / 13.5s / 25s | 
+| Step1X-Edit (offload)   |       25.9GB / 27.3GB / 29.1GB | 49.6s / 54.1s / 63.2s |
+| Step1X-Edit (FP8 + offload)   |   18GB / 18GB / 18GB | 35s / 40s / 51s |
+
+* The model is tested on one H800 GPU.
+* We recommend to use GPUs with 80GB of memory for better generation quality and efficiency.
+
+
+### A3. Multi-GPU inference
+For multi-GPU inference, you can use the following script:
+```
+bash scripts/run_examples_parallel.sh
+```
+You can change the number of GPUs (`GPU`), the configuration of xDiT (`--ulysses_degree` or `--ring_degree` or `--cfg_degree`), and whether to enable TeaCache acceleration (`--teacache`) in the script.
+The table below presents the speedup of several efficient methods on the Step1X-Edit model.
+
+|     Model    |     Peak GPU Memory   |  28 steps |
+|:------------:|:------------:|:------------:|
+| Step1X-Edit + TeaCache     |    49.6GB   | 16.78s | 
+| Step1X-Edit + xDiT (GPU=2) |    50.2GB   | 12.81s |
+| Step1X-Edit + xDiT (GPU=4) |    52.9GB   | 8.17s |
+| Step1X-Edit + TeaCache + xDiT (GPU=2)  |  50.7GB    | 8.94s |
+| Step1X-Edit + TeaCache + xDiT (GPU=4)  |  54.2GB |  5.82s |
+
+* The model was tested on H800 series GPUs with a resolution of 1024.
+* TeaCache's default threshold of 0.2 provides a good balance between efficiency and performance.
+* xDiT employs both CFG Parallelism and Ring Attention when using 4 GPUs, but only utilizes CFG Parallelism when operating with 2 GPUs.
+
+This default script runs the inference code on example inputs. The results will look like:
+<div align="center">
+<img width="1080" alt="results" src="assets/efficient_teasar.png">
+</div>
+
+
+<!-- ### 2.4 Gradio Scripts
+
+Change the `model_path` in `gradio_app.py` to the local path of Step1X-Edit. Then run
+
+```bash
+python gradio_app.py
+```
+
+Then the gradio demo will run on `localhost:32800`. -->
+
+
+
+
+
+### A4. Finetuning
+#### Lora training script
+
+Here is the the GPU memory cost during training with lora rank as 64 and batchsize as 1:
+
+|     Precision of DiT    |     bf16 (512 / 786 / 1024)  | fp8 (512 / 786 / 1024) |
+|:------------:|:------------:|:------------:|
+| GPU Memory   |                29.7GB / 31.6GB / 33.8GB  | 19.8GB / 21.3GB / 23.6GB |
 
 The script `./scripts/finetuning.sh` shows how to fine-tune the Step1X-Edit model. With our default strategy, it is possible to fine-tune Step1X-Edit with 1024 resolution on a single 24GB GPU. Our fine-tuning script is adapted from  [kohya-ss/sd-scripts](https://github.com/kohya-ss/sd-scripts).
 
@@ -266,9 +267,8 @@ The `metadata_file` should be a json file containing a dict as follows:
 }
 ```
 
-### 3.2 Inference with Lora
-
-Simply add `--lora <path to your lora weights>` when using `inference.py`. For example:
+#### Inference with Lora
+To inference with Lora, simply add `--lora <path to your lora weights>` when using `inference.py`. For example:
 
 ```bash
 python inference.py --input_dir ./examples \
@@ -279,28 +279,19 @@ python inference.py --input_dir ./examples \
     --lora 20250521_001-lora256-alpha128-fix-hand-per-epoch/step1x-edit_test.safetensors
 ```
 
-To reproduce the cases below, 
-
-```bash 
-bash scripts/run_examples_fix_hand.sh
-```
-
-
-### 3.3 Performances
-
-Here is the the GPU memory cost during training with lora rank as 64 and batchsize as 1:
-
-|     Precision of DiT    |     bf16 (512 / 786 / 1024)  | fp8 (512 / 786 / 1024) |
-|:------------:|:------------:|:------------:|
-| GPU Memory   |                29.7GB / 31.6GB / 33.8GB  | 19.8GB / 21.3GB / 23.6GB |
-
 Here is an example for our [pretrained Lora weights](https://huggingface.co/stepfun-ai/Step1X-Edit/tree/main/lora), which is designed for fixing corrupted hands of anime characters.
 
 <div align="center">
 <img width="1080" alt="results" src="assets/lora_teaser.png">
 </div>
 
-## 4. Benchmark
+To reproduce the cases above, you can run the following scripts:
+```bash 
+bash scripts/run_examples_fix_hand.sh
+```
+
+
+## 📊 Benchmark
 We release [GEdit-Bench](https://huggingface.co/datasets/stepfun-ai/GEdit-Bench) as a new benchmark, grounded in real-world usages is developed to support more authentic and comprehensive evaluation. This benchmark, which is carefully curated to reflect actual user editing needs and a wide range of editing scenarios, enables more authentic and comprehensive evaluations of image editing models.
 The evaluation process and related code can be found in [GEdit-Bench/EVAL.md](GEdit-Bench/EVAL.md). Part results of the benchmark are shown below:
 <div align="center">
@@ -308,8 +299,25 @@ The evaluation process and related code can be found in [GEdit-Bench/EVAL.md](GE
 </div>
 
 
-## 5. Citation
+## 🧩 Community Contributions
+
+If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
+
+- A detailed introduction blog of Step1X-Edit: [Step1X-Edit执行流程](https://liwenju0.com/posts/Step1X-Edit%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B-%E4%B8%80.html) by [liwenju0](https://liwenju0.com/about.html)
+- FP8 model weights: [meimeilook/Step1X-Edit-FP8](https://huggingface.co/meimeilook/Step1X-Edit-FP8) by [meimeilook](https://huggingface.co/meimeilook);  [rkfg/Step1X-Edit-FP8](https://huggingface.co/rkfg/Step1X-Edit-FP8) by [rkfg](https://huggingface.co/rkfg)
+- Step1X-Edit ComfyUI Plugin: [quank123wip/ComfyUI-Step1X-Edit](https://github.com/quank123wip/ComfyUI-Step1X-Edit) by [quank123wip](https://github.com/quank123wip); [raykindle/ComfyUI_Step1X-Edit](https://github.com/raykindle/ComfyUI_Step1X-Edit) by [raykindle](https://github.com/raykindle)
+- Training scripts: [hobart07/Step1X-Edit_train](https://github.com/hobart07/Step1X-Edit_train) by [hobart07](https://github.com/hobart07)
+
+## 📚 Citation
+If you find the Step1X-Edit series helpful for your research or applications, please consider ⭐ starring the repository and citing our paper.
 ```
+@article{wu2025kris,
+  title={KRIS-Bench: Benchmarking Next-Level Intelligent Image Editing Models},
+  author={Wu, Yongliang and Li, Zonghui and Hu, Xinting and Ye, Xinyu and Zeng, Xianfang and Yu, Gang and Zhu, Wenbo and Schiele, Bernt and Yang, Ming-Hsuan and Yang, Xu},
+  journal={arXiv preprint arXiv:2505.16707},
+  year={2025}
+}
+
 @article{liu2025step1x-edit,
       title={Step1X-Edit: A Practical Framework for General Image Editing}, 
       author={Shiyu Liu and Yucheng Han and Peng Xing and Fukun Yin and Rui Wang and Wei Cheng and Jiaqi Liao and Yingming Wang and Honghao Fu and Chunrui Han and Guopeng Li and Yuang Peng and Quan Sun and Jingwei Wu and Yan Cai and Zheng Ge and Ranchen Ming and Lei Xia and Xianfang Zeng and Yibo Zhu and Binxing Jiao and Xiangyu Zhang and Gang Yu and Daxin Jiang},
@@ -318,12 +326,12 @@ The evaluation process and related code can be found in [GEdit-Bench/EVAL.md](GE
 }
 ```
 
-## 6. Acknowledgement
+## Acknowledgement
 We would like to express our sincere thanks to the contributors of [Kohya](https://github.com/kohya-ss/sd-scripts/tree/sd3), [SD3](https://huggingface.co/stabilityai/stable-diffusion-3-medium), [FLUX](https://github.com/black-forest-labs/flux), [Qwen](https://github.com/QwenLM/Qwen2.5), [xDiT](https://github.com/xdit-project/xDiT), [TeaCache](https://github.com/ali-vilab/TeaCache), [diffusers](https://github.com/huggingface/diffusers) and [HuggingFace](https://huggingface.co) teams, for their open research and exploration.
 
 
-## 7. Disclaimer
+## Disclaimer
 The results produced by this image editing model are entirely determined by user input and actions. The development team and this open-source project are not responsible for any outcomes or consequences arising from its use.
 
-## 8. LICENSE
+## LICENSE
 Step1X-Edit is licensed under the Apache License 2.0. You can find the license files in the respective github and  HuggingFace repositories.
