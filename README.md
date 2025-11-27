@@ -15,6 +15,36 @@
 
 
 ## 🔥🔥🔥 News!!
+* Nov 26, 2025: 👋 We release [Step1X-Edit-v1p2](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2), a native reasoning edit model with better performance on KRIS-Bench and GEdit-Bench. <!-- technical report can be found [here]().  -->
+  <table>
+  <thead>
+  <tr>
+    <th rowspan="2">Models</th>
+    <th colspan="3"> <div align="center">GEdit-Bench</div> </th>
+    <th colspan="4"> <div align="center">Kris-Bench</div> </th>
+  </tr>
+  <tr>
+    <th>G_SC⬆️</th> <th>G_PQ⬆️ </th> <th>G_O⬆️</th> <th>FK⬆️</th> <th>CK⬆️</th> <th>PK⬆️ </th> <th>Overall⬆️</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Step1X-Edit v1.1 </td> <td>7.66</td> <td>7.35</td> <td>6.97</td> <td>53.05</td> <td>54.34</td> <td>44.66</td> <td>51.59</td>
+  </tr>
+  <tr>
+    <td>Step1x-edit-v1p2-preview </td> <td>8.14</td> <td>7.55</td> <td>7.42</td> <td>60.49</td> <td>58.81</td> <td>41.77</td> <td>52.51</td>
+  </tr>
+  <tr>
+    <td>Step1x-edit-v1p2 (base) </td> <td>7.77</td> <td>7.65</td> <td>7.24</td> <td>58.23</td> <td>60.55</td> <td>46.21</td> <td>56.33</td>
+  </tr>
+  <tr>
+    <td>Step1x-edit-v1p2 (thinking) </td> <td>8.02</td> <td>7.64</td> <td>7.36</td> <td>59.79</td> <td>62.76</td> <td>49.78</td> <td>58.64</td>
+  </tr>
+  <tr>
+    <td>Step1x-edit-v1p2 (thinking + reflection) </td> <td>8.18</td> <td>7.85</td> <td>7.58</td> <td>62.44</td> <td>65.72</td> <td>50.42</td> <td>60.93</td>
+  </tr>
+  </table>
+
 * Sep 08, 2025: 👋 We release [step1x-edit-v1p2-preview](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2-preview), a new version of Step1X-Edit with reasoning edit ability and better performance (report to be released soon), featuring:
   - Native Reasoning Edit Model: Combines instruction reasoning with reflective correction to handle complex edits more accurately. Performance on KRIS-Bench:
     |    Models    |   Factual Knowledge ⬆️   |  Conceptual Knowledge ⬆️ | Procedural Knowledge ⬆️   |  Overall ⬆️ | 
@@ -76,6 +106,48 @@ More details please refer to our [technical report](https://arxiv.org/abs/2504.1
 1. Make sure your `transformers==4.55.0` (we tested on this version)
 2. Install the `diffusers` package locally, according model version you want to use
 
+
+### Step1X-Edit-v1p2 (v1.2)
+Install the `diffusers` package from the following command:
+```bash
+git clone -b step1xedit_v1p2 https://github.com/Peyton-Chen/diffusers.git
+cd diffusers
+pip install -e .
+```
+Here is an example for using the `Step1X-Edit-v1p2` model to edit images:
+```python
+import torch
+from diffusers import Step1XEditPipelineV1P2
+from diffusers.utils import load_image
+pipe = Step1XEditPipelineV1P2.from_pretrained("stepfun-ai/Step1X-Edit-v1p2", torch_dtype=torch.bfloat16)
+pipe.to("cuda")
+print("=== processing image ===")
+image = load_image("examples/0000.jpg").convert("RGB")
+prompt = "add a ruby pendant on the girl's neck."
+enable_thinking_mode=True
+enable_reflection_mode=True
+pipe_output = pipe(
+    image=image,
+    prompt=prompt,
+    num_inference_steps=50,
+    true_cfg_scale=6,
+    generator=torch.Generator().manual_seed(42),
+    enable_thinking_mode=enable_thinking_mode,
+    enable_reflection_mode=enable_reflection_mode,
+)
+if enable_thinking_mode:
+    print("Reformat Prompt:", pipe_output.reformat_prompt)
+for image_idx in range(len(pipe_output.images)):
+    pipe_output.images[image_idx].save(f"0001-{image_idx}.jpg", lossless=True)
+    if enable_reflection_mode:
+        print(pipe_output.think_info[image_idx])
+        print(pipe_output.best_info[image_idx])
+pipe_output.final_images[0].save(f"0001-final.jpg", lossless=True)
+```
+The results looks like:
+<div align="center">
+<img width="1080" alt="results" src="assets/v1p2_vis.jpg">
+</div>
 
 ### Step1X-Edit-v1p2-preview (v1.2-preview)
 Install the `diffusers` package from the following command:
@@ -319,10 +391,10 @@ If you find the Step1X-Edit series helpful for your research or applications, pl
 }
 
 @article{liu2025step1x-edit,
-      title={Step1X-Edit: A Practical Framework for General Image Editing}, 
-      author={Shiyu Liu and Yucheng Han and Peng Xing and Fukun Yin and Rui Wang and Wei Cheng and Jiaqi Liao and Yingming Wang and Honghao Fu and Chunrui Han and Guopeng Li and Yuang Peng and Quan Sun and Jingwei Wu and Yan Cai and Zheng Ge and Ranchen Ming and Lei Xia and Xianfang Zeng and Yibo Zhu and Binxing Jiao and Xiangyu Zhang and Gang Yu and Daxin Jiang},
-      journal={arXiv preprint arXiv:2504.17761},
-      year={2025}
+  title={Step1X-Edit: A Practical Framework for General Image Editing}, 
+  author={Shiyu Liu and Yucheng Han and Peng Xing and Fukun Yin and Rui Wang and Wei Cheng and Jiaqi Liao and Yingming Wang and Honghao Fu and Chunrui Han and Guopeng Li and Yuang Peng and Quan Sun and Jingwei Wu and Yan Cai and Zheng Ge and Ranchen Ming and Lei Xia and Xianfang Zeng and Yibo Zhu and Binxing Jiao and Xiangyu Zhang and Gang Yu and Daxin Jiang},
+  journal={arXiv preprint arXiv:2504.17761},
+  year={2025}
 }
 ```
 
