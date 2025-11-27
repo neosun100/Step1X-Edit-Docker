@@ -28,6 +28,12 @@
   </tr>
   </thead>
   <tbody>
+  <tr>  
+    <td>Flux-Kontext-dev </td> <td>7.16</td> <td>7.37</td> <td>6.51</td> <td>53.28</td> <td>50.36</td> <td>42.53</td> <td>49.54</td>
+  </tr>
+  <tr>   
+    <td>Qwen-Image-Edit-2509 </td> <td>8.00</td> <td>7.86</td> <td>7.56</td> <td>61.47</td> <td>56.79</td> <td>47.07</td> <td>56.15</td>
+  </tr>
   <tr>
     <td>Step1X-Edit v1.1 </td> <td>7.66</td> <td>7.35</td> <td>6.97</td> <td>53.05</td> <td>54.34</td> <td>44.66</td> <td>51.59</td>
   </tr>
