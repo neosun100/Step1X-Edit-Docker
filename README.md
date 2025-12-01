@@ -15,7 +15,7 @@
 
 
 ## 🔥🔥🔥 News!!
-* Nov 26, 2025: 👋 We release [Step1X-Edit-v1p2](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2) (referred to as **ReasonEdit-S** in the paper), a native reasoning edit model with better performance on KRIS-Bench and GEdit-Bench.technical report can be found [here](https://arxiv.org/abs/2511.22625).
+* Nov 26, 2025: 👋 We release [Step1X-Edit-v1p2](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2) (referred to as **ReasonEdit-S** in the paper), a native reasoning edit model with better performance on KRIS-Bench and GEdit-Bench. Technical report can be found [here](https://arxiv.org/abs/2511.22625).
   <table>
   <thead>
   <tr>
@@ -152,7 +152,7 @@ pipe_output.final_images[0].save(f"0001-final.jpg", lossless=True)
 ```
 The results looks like:
 <div align="center">
-<img width="1080" alt="results" src="assets/v1p2_vis.jpg">
+<img width="1080" alt="results" src="assets/v1p2_vis.jpeg">
 </div>
 
 ### Step1X-Edit-v1p2-preview (v1.2-preview)
@@ -390,7 +390,7 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 If you find the Step1X-Edit series helpful for your research or applications, please consider ⭐ starring the repository and citing our paper.
 ```
 @article{yin2025reasonedit,
-  title={REASONEDIT: Towards Reasoning-Enhanced Image Editing Models}, 
+  title={ReasonEdit: Towards Reasoning-Enhanced Image Editing Models}, 
   author={Fukun Yin, Shiyu Liu, Yucheng Han, Zhibo Wang, Peng Xing, Rui Wang, Wei Cheng, Yingming Wang, Aojie Li, Zixin Yin, Pengtao Chen, Xiangyu Zhang, Daxin Jiang, Xianfang Zeng, Gang Yu},
   journal={arXiv preprint arXiv:2511.22625},
   year={2025}
