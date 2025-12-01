@@ -15,7 +15,7 @@
 
 
 ## 🔥🔥🔥 News!!
-* Nov 26, 2025: 👋 We release [Step1X-Edit-v1p2](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2), a native reasoning edit model with better performance on KRIS-Bench and GEdit-Bench. <!-- technical report can be found [here]().  -->
+* Nov 26, 2025: 👋 We release [Step1X-Edit-v1p2](https://huggingface.co/stepfun-ai/Step1X-Edit-v1p2) (referred to as **ReasonEdit-S** in the paper), a native reasoning edit model with better performance on KRIS-Bench and GEdit-Bench.technical report can be found [here](https://arxiv.org/abs/2511.22625).
   <table>
   <thead>
   <tr>
@@ -389,6 +389,13 @@ If you develop/use Step1X-Edit in your projects, welcome to let us know 🎉.
 ## 📚 Citation
 If you find the Step1X-Edit series helpful for your research or applications, please consider ⭐ starring the repository and citing our paper.
 ```
+@article{yin2025reasonedit,
+  title={REASONEDIT: Towards Reasoning-Enhanced Image Editing Models}, 
+  author={Fukun Yin, Shiyu Liu, Yucheng Han, Zhibo Wang, Peng Xing, Rui Wang, Wei Cheng, Yingming Wang, Aojie Li, Zixin Yin, Pengtao Chen, Xiangyu Zhang, Daxin Jiang, Xianfang Zeng, Gang Yu},
+  journal={arXiv preprint arXiv:2511.22625},
+  year={2025}
+}
+
 @article{wu2025kris,
   title={KRIS-Bench: Benchmarking Next-Level Intelligent Image Editing Models},
   author={Wu, Yongliang and Li, Zonghui and Hu, Xinting and Ye, Xinyu and Zeng, Xianfang and Yu, Gang and Zhu, Wenbo and Schiele, Bernt and Yang, Ming-Hsuan and Yang, Xu},
@@ -402,6 +409,7 @@ If you find the Step1X-Edit series helpful for your research or applications, pl
   journal={arXiv preprint arXiv:2504.17761},
   year={2025}
 }
+
 ```
 
 ## Acknowledgement
