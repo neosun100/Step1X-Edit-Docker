@@ -1,6 +1,117 @@
-.DS_store
-.idea
-*/.DS_store
-__pycache__
-*/__pycache__/
-test*
+# Sensitive Information
+.env
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+config/local.py
+
+# API Keys and Tokens
+*_token
+*_secret
+*_key
+*.credentials
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
+.venv
+
+# PyTorch
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+checkpoints/
+models/
+*.bin
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+*.out
+
+# Docker
+.dockerignore
+
+# Outputs
+outputs/
+output/
+results/
+tmp/
+temp/
+cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup
+*.bak
+*.backup
+*~
+
+# Large files
+*.mp4
+*.avi
+*.mov
+*.zip
+*.tar.gz
+*.rar

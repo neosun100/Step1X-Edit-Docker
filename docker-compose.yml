@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  step1x-edit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: step1x-edit
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-0}
+      - CUDA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-0}
+      - PORT=${PORT:-8000}
+      - GPU_IDLE_TIMEOUT=${GPU_IDLE_TIMEOUT:-60}
+      - MODEL_PATH=${MODEL_PATH:-/models/Step1X-Edit}
+      - ENABLE_UI=${ENABLE_UI:-true}
+      - ENABLE_API=${ENABLE_API:-true}
+      - ENABLE_MCP=${ENABLE_MCP:-true}
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - ${MODEL_PATH:-./models}:/models
+      - ./outputs:/app/outputs
+      - ./examples:/app/examples
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
