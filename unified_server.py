@@ -399,9 +399,83 @@ async def serve_ui():
             cursor: pointer;
         }
         
+        .github-buttons {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+        
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .github-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .github-btn-star {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            border-color: #ffc107;
+            font-size: 16px;
+            padding: 14px 28px;
+            animation: pulse 2s infinite;
+        }
+        
+        .github-btn-star:hover {
+            background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        
+        .github-btn-bug {
+            background: #fff;
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        
+        .github-btn-bug:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+        
+        .github-btn-feature {
+            background: #fff;
+            color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .github-btn-feature:hover {
+            background: #667eea;
+            color: #fff;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
         @media (max-width: 768px) {
             .image-compare { grid-template-columns: 1fr; }
             .params { grid-template-columns: 1fr; }
+            .github-buttons { flex-direction: column; }
+            .github-btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -413,6 +487,18 @@ async def serve_ui():
         </div>
         
         <div class="content">
+            <div class="github-buttons">
+                <a href="https://github.com/neosun100/Step1X-Edit-Docker" target="_blank" class="github-btn github-btn-star">
+                    ⭐ Star on GitHub
+                </a>
+                <a href="https://github.com/neosun100/Step1X-Edit-Docker/issues/new?labels=bug&template=bug_report.md" target="_blank" class="github-btn github-btn-bug">
+                    🐛 Report Bug
+                </a>
+                <a href="https://github.com/neosun100/Step1X-Edit-Docker/issues/new?labels=enhancement&template=feature_request.md" target="_blank" class="github-btn github-btn-feature">
+                    💡 Request Feature
+                </a>
+            </div>
+            
             <div class="upload-area" id="uploadArea">
                 <input type="file" id="fileInput" accept="image/*" style="display:none">
                 <h3>📁 Click or Drag Image Here</h3>
